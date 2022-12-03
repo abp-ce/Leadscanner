@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  psql:
+    image: postgres:alpine
+    restart: always
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    # ports:
+    #   - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=asdrty68
+
+  ls-fastapi:
+    image: abpdock/ls-test
+    restart: always
+    volumes:
+      - ~/.ssh:/code/secrets
+    ports:
+      - "8000:8000"
+    depends_on:
+      - psql
+
+volumes:
+  pg_data:

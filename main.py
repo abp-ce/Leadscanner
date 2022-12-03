@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from constants import DATABASE_NAME
+from constants import DATABASE_NAME, DATABASE_TYPE
 from dependencies import get_db
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,10 +32,16 @@ app.add_middleware(
 
 @app.on_event("startup")
 def create_pool():
-    engine = create_engine(
-        DATABASE_NAME,
-        connect_args={'check_same_thread': False}
-    )
+    if DATABASE_TYPE == 'SQLITE':
+        engine = create_engine(
+            DATABASE_NAME,
+            connect_args={'check_same_thread': False}
+        )
+    else:
+        engine = create_engine(
+            DATABASE_NAME
+        )
+
     app.state.session = sessionmaker(autocommit=False, autoflush=False,
                                      bind=engine)
 
