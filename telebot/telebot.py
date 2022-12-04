@@ -1,5 +1,3 @@
-import logging
-from os import getenv
 from typing import Optional
 
 from sqlalchemy.orm import Session
@@ -10,11 +8,6 @@ from fastapi import APIRouter, Depends, status
 
 from . import crud
 
-logger = logging.getLogger('uvicorn')
-
-TOKEN = getenv('LS_TELEBOT')
-URL = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
-HEADERS = {'Content-Type': 'application/json'}
 LIST_COMMAND = '\n  /list - список задач'
 
 router = APIRouter(
