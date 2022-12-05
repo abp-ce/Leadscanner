@@ -60,8 +60,10 @@ async def add_task(chat_id: int, task: str = 'Empty',
 
 @app.get('/list/{chat_id}', response_model=TaskList,
          status_code=status.HTTP_200_OK)
-async def task_list(chat_id: int,
-                    db: Session = Depends(get_db)) -> Union[NoReturn, TaskList]:
+async def task_list(
+    chat_id: int,
+    db: Session = Depends(get_db)
+) -> Union[NoReturn, TaskList]:
     user = crud.check_user(db, chat_id)
     if not user:
         raise HTTPException(status_code=404, detail='Chat id не существует')
