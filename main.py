@@ -1,4 +1,5 @@
-from dotenv import load_dotenv
+from typing import Dict, NoReturn, Union
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -8,9 +9,6 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import TaskList
 from telebot import crud, telebot
-
-
-load_dotenv()
 
 
 app = FastAPI(dependencies=[Depends(get_db)])
@@ -31,7 +29,7 @@ app.add_middleware(
 
 
 @app.on_event("startup")
-def create_pool():
+def create_pool() -> None:
     if DATABASE_TYPE == 'SQLITE':
         engine = create_engine(
             DATABASE_NAME,
@@ -48,7 +46,7 @@ def create_pool():
 
 @app.get('/add/{chat_id}', status_code=status.HTTP_201_CREATED)
 async def add_task(chat_id: int, task: str = 'Empty',
-                   db: Session = Depends(get_db)):
+                   db: Session = Depends(get_db)) -> Union[Dict, NoReturn]:
     user = crud.check_user(db, chat_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -62,7 +60,8 @@ async def add_task(chat_id: int, task: str = 'Empty',
 
 @app.get('/list/{chat_id}', response_model=TaskList,
          status_code=status.HTTP_200_OK)
-async def task_list(chat_id: int, db: Session = Depends(get_db)):
+async def task_list(chat_id: int,
+                    db: Session = Depends(get_db)) -> Union[NoReturn, TaskList]:
     user = crud.check_user(db, chat_id)
     if not user:
         raise HTTPException(status_code=404, detail='Chat id не существует')

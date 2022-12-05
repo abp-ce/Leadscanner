@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 def add_task(db: Session, update: schemas.tgrmUpdate,
-             chat_id: int, res: schemas.tgrmSendMessage):
+             chat_id: int, res: schemas.tgrmSendMessage) -> None:
     task = crud.add_task(db, chat_id, update.message.text)
     if task:
         res.text = 'Задача добавлена' + LIST_COMMAND
@@ -25,7 +25,7 @@ def add_task(db: Session, update: schemas.tgrmUpdate,
         res.text = 'Количество задач превышает допустимые'
 
 
-def make_list(db: Session, chat_id: int, res: schemas.tgrmSendMessage):
+def make_list(db: Session, chat_id: int, res: schemas.tgrmSendMessage) -> None:
     res.text = ('Нажмите на задачу, что бы удалить'
                 + LIST_COMMAND)
     tasks = crud.task_list(db, chat_id)
@@ -43,7 +43,10 @@ def make_list(db: Session, chat_id: int, res: schemas.tgrmSendMessage):
 
 @router.post("/", response_model=Optional[schemas.tgrmSendMessage],
              response_model_exclude_none=True, status_code=status.HTTP_200_OK)
-async def telebot(update: schemas.tgrmUpdate, db: Session = Depends(get_db)):
+async def telebot(
+    update: schemas.tgrmUpdate,
+    db: Session = Depends(get_db)
+) -> Optional[schemas.tgrmSendMessage]:
     res = None
     if update.callback_query:
         crud.delete_task(db, update.callback_query.data)
