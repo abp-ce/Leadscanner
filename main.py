@@ -49,6 +49,11 @@ async def uptimerobot():
     return None
 
 
+@app.get('/uptimerobot/', status_code=status.HTTP_200_OK)
+async def uptimerobot_get():
+    return {'status': 'Задача добавлена'}
+
+
 @app.get('/add/{chat_id}', status_code=status.HTTP_201_CREATED)
 async def add_task(chat_id: int, task: str = 'Empty',
                    db: Session = Depends(get_db)) -> Union[Dict, NoReturn]:
